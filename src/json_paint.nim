@@ -1,4 +1,4 @@
 
 import json_paint/canvas
 
-export initCanvas, renderCanvas, takeCanvasEvents
+export initCanvas, renderCanvas, takeCanvasEvents, setJsonPaintVervose
