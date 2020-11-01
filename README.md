@@ -13,12 +13,15 @@ requires "https://github.com/Quamolit/json-paint.nim#v0.0.1"
 ```nim
 initCanvas("title", 400, 400)
 
-renderCanvas(data.boolVal)
+renderCanvas({
+  "type": "group",
+  "children": [] # see specs for currently supported shapes
+})
 
 takeCanvasEvents()
 ```
 
-### Shapes
+### Specs
 
 JSON described in CoffeeScript.
 
@@ -68,10 +71,10 @@ radius: 1
 'fill-color': Color
 ```
 
-* Path
+* Operations
 
 ```coffee
-type: 'combo'
+type: 'ops'
 x: 1
 y: 1
 path: [
@@ -114,6 +117,8 @@ path: [
   'negative?': false
 ]
 ```
+
+### Polyline
 
 ```coffee
 type: 'polyline'

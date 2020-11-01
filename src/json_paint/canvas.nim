@@ -169,6 +169,59 @@ proc renderText(ctx: ptr Context, tree: JsonNode) =
   ctx.moveTo realX, realY
   ctx.showText text
 
+proc callOps(ctx: ptr Context, tree: JsonNode) =
+  if tree.contains("ops").not or tree["ops"].kind != JArray: showError("Expects `ops` field")
+  for item in tree["ops"].elems:
+    if item.contains("type").not: showError("Expects `type` field")
+    let opType = item["type"].getStr
+    case opType
+    of "move-to":
+      let x = if item.contains("x"): item["x"].getFloat else: 0
+      let y = if item.contains("y"): item["y"].getFloat else: 0
+      ctx.moveTo x, y
+    of "stroke":
+      ctx.stroke()
+    of "fill":
+      ctx.fill()
+    of "stroke-preserve":
+      ctx.strokePreserve()
+    of "fill-preserve":
+      ctx.fillPreserve()
+    of "line-width":
+      let width = if item.contains("width"): item["width"].getFloat else: 0
+      ctx.setLineWidth width
+    of "source-rgb":
+      let color = if item.contains("color"): readJsonColor(item["color"]) else: failedColor
+      ctx.setSourceRgba color.r, color.g, color.b, color.a
+    of "line-to":
+      let x = if item.contains("x"): item["x"].getFloat else: 0
+      let y = if item.contains("y"): item["y"].getFloat else: 0
+      ctx.lineTo x, y
+    of "relative-line-to":
+      let x = if item.contains("x"): item["x"].getFloat else: 0
+      let y = if item.contains("y"): item["y"].getFloat else: 0
+      ctx.relLineTo x, y
+    of "curve-to":
+      if item.contains("path").not: showError("Expects `path` field in curve")
+      let controlPoints = item["path"]
+      if controlPoints.kind != JArray or controlPoints.elems.len < 3: showError("Expects path or 3")
+      let p0 = readPointVec controlPoints.elems[0]
+      let p1 = readPointVec controlPoints.elems[1]
+      let p2 = readPointVec controlPoints.elems[2]
+      ctx.curveTo p0.x, p0.y, p1.x, p1.y, p2.x, p2.y
+    of "relative-curve-to":
+      if item.contains("path").not: showError("Expects `path` field in curve")
+      let controlPoints = item["path"]
+      if controlPoints.kind != JArray or controlPoints.elems.len < 3: showError("Expects path or 3")
+      let p0 = readPointVec controlPoints.elems[0]
+      let p1 = readPointVec controlPoints.elems[1]
+      let p2 = readPointVec controlPoints.elems[2]
+      ctx.relCurveTo p0.x, p0.y, p1.x, p1.y, p2.x, p2.y
+    of "arc":
+      renderArc(ctx, item)
+    else:
+      echo "WARNING: unknown op type: ", opType
+
 proc processJsonTree(ctx: ptr Context, tree: JsonNode) =
   if verboseMode:
     echo tree.pretty
@@ -189,6 +242,8 @@ proc processJsonTree(ctx: ptr Context, tree: JsonNode) =
         ctx.renderPolyline(tree)
       of "text":
         ctx.renderText(tree)
+      of "ops":
+        ctx.callOps(tree)
       else:
         echo tree.pretty
         showError("Unknown type")

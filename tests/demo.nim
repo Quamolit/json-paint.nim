@@ -68,6 +68,32 @@ proc ap1() =
         "color": {
           "r": 80, "g": "90", "b": "70"
         }
+      },
+      {
+        "type": "ops",
+        "ops": [
+          {
+            "type": "move-to",
+            "x": 100,
+            "y": 100
+          },
+          {
+            "type": "line-to",
+            "x": 300,
+            "y": 200,
+          },
+          {
+            "type": "source-rgb",
+            "color": {
+              "r": 80,
+              "g": 70,
+              "b": 40
+            }
+          },
+          {
+            "type": "stroke"
+          }
+        ]
       }
     ]
   })
