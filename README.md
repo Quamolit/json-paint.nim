@@ -28,7 +28,7 @@ Since Cairo uses RGB color from `0 ~ 1.0` rather than int 256, this library uses
 r: 1 # 0~100
 g: 1 # 0~100
 b: 1 # 0~100
-a: 100 # 0~100
+a: 1 # 0~1
 ```
 
 * Group
@@ -47,11 +47,10 @@ type: 'text'
 x: 1
 y: 1
 text: 'DEMO'
-style:
-  'font-size': 14
-  'font-weight': 300
-  'font-family': 'Arial'
+'font-size': 14
+'font-family': 'Arial'
 color: Color
+align: "center" # 'left' | 'center' | 'right'
 ```
 
 * Arc
@@ -82,6 +81,10 @@ path: [
 ,
   type: 'fill'
 ,
+  type: 'stroke-preserve'
+,
+  type: 'fill-preserve'
+,
   type: 'line-width', width: 1
 ,
   type: 'source-rgb', color: Color
@@ -106,24 +109,25 @@ path: [
   x: 1
   y: 1
   radius: 1
+  'start-angle': 0
+  'end-angle': 6.28
   'negative?': false
 ]
 ```
 
 ```coffee
 type: 'polyline'
-x: 1
-y: 1
+from: [1, 1]
 stops: [
-  x: 2, y: 2
-,
-  x: 3, y: 3
-,
-  x: 4, y: 4
+  [2, 2], [3, 3], [4, 4]
 ]
-color: Color
-'stroke-width': 1
+'relative-stops': [
+  [2, 2], [3, 3], [4, 4]
+]
+'stroke-color': Color
+'line-width': 1
 'line-join': 'round' # 'round' | 'milter' | 'bevel'
+'fill-color': Color
 ```
 
 ### License
