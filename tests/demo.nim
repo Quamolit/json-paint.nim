@@ -12,16 +12,8 @@ proc startRenderLoop() =
     "x": 20,
     "y": 20,
     "radius": 40,
-    "line-color": {
-      "r": 50,
-      "g": 80,
-      "b": 80
-    },
-    "fill-color": {
-      "r": 20,
-      "g": 20,
-      "b": 80
-    }
+    "line-color": [200, 80, 71, 0.4],
+    "fill-color": [200, 80, 72, 0.4]
   })
 
   while true:
@@ -30,7 +22,7 @@ proc startRenderLoop() =
     takeCanvasEvents()
 
 proc ap1() =
-  let bg: RgbaColor = (0.1,0.1,0.1,1.0)
+  let bg = hslToRgb(0,0,10,1)
   initCanvas("This is a title", 600, 300, bg)
   renderCanvas(%* {
     "type": "group",
@@ -40,16 +32,8 @@ proc ap1() =
         "x": 20,
         "y": 20,
         "radius": 40,
-        "stroke-color": {
-          "r": 50,
-          "g": 80,
-          "b": 80
-        },
-        "fill-color": {
-          "r": 20,
-          "g": 20,
-          "b": 80
-        }
+        "stroke-color": [20, 80, 73],
+        "fill-color": [60, 80, 74]
       },
       {
         "type": "polyline",
@@ -58,7 +42,7 @@ proc ap1() =
           [40, 40], [40, 80], [70, 90], [200, 200]
         ],
         "line-width": 2,
-        "stroke-color": {"r": 100, "g": 100, "b": 10}
+        "stroke-color": [100, 80, 75]
       },
       {
         "type": "text",
@@ -66,9 +50,7 @@ proc ap1() =
         "align": "left",
         "x": 40,
         "y": 40,
-        "color": {
-          "r": 80, "g": "90", "b": "70"
-        }
+        "color": [140, 80, 76]
       },
       {
         "type": "ops",
@@ -85,11 +67,7 @@ proc ap1() =
           },
           {
             "type": "source-rgb",
-            "color": {
-              "r": 80,
-              "g": 70,
-              "b": 40
-            }
+            "color": [180, 80, 77]
           },
           {
             "type": "stroke"

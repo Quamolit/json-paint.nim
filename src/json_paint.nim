@@ -4,6 +4,7 @@ import cairo
 import json
 
 import json_paint/shape_renderer
+import json_paint/color_util
 
 var surface: ptr cairo.Surface
 var renderer: RendererPtr
@@ -63,4 +64,4 @@ proc takeCanvasEvents*() =
 proc setJsonPaintVerbose*(v: bool) =
   verboseMode = v
 
-export RgbaColor
+export RgbaColor, hslToRgb

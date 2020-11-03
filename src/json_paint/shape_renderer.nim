@@ -4,26 +4,11 @@ import json
 import math
 
 import ./error_util
+import ./color_util
 
 var verboseMode* = false
 
-type RgbaColor* = tuple[r: float, g: float, b: float, a: float]
 type JsonPosition = tuple[x: float, y: float]
-
-proc rgb*(r, g, b, a: float = 1): RgbaColor =
-  return (r: r/100, g: g/100, b: b/100, a: a)
-
-const failedColor: RgbaColor = (100.0, 0.0, 0.0, 1.0)
-
-# fallbacks to red
-proc readJsonColor*(raw: JsonNode): RgbaColor =
-  if raw.kind != JObject:
-    return failedColor
-  let r = if raw.contains("r"): raw["r"].getFloat else: 0
-  let g = if raw.contains("g"): raw["g"].getFloat else: 0
-  let b = if raw.contains("b"): raw["b"].getFloat else: 0
-  let a = if raw.contains("a"): raw["a"].getFloat else: 1
-  return rgb(r, g, b, a)
 
 proc readPointVec(raw: JsonNode): JsonPosition =
   if raw.kind != JArray:
