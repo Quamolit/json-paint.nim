@@ -7,7 +7,7 @@ JSON Paint
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.3"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.4"
 ```
 
 ```nim
@@ -22,6 +22,8 @@ renderCanvas({
 })
 
 takeCanvasEvents()
+
+hslToRgb(0,0,10,1)
 ```
 
 Try in dev:
@@ -34,13 +36,10 @@ nimble t
 
 JSON described in CoffeeScript.
 
-Since Cairo uses RGB color from `0 ~ 1.0` rather than int 256, this library uses 100-based numbers too:
+This library uses hsl colors:
 
 ```coffee
-r: 1 # 0~100
-g: 1 # 0~100
-b: 1 # 0~100
-a: 1 # 0~1
+[359,99,99,1]
 ```
 
 * Group
