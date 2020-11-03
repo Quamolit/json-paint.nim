@@ -7,11 +7,14 @@ JSON Paint
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.1"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.3"
 ```
 
 ```nim
+import json_paint
+
 initCanvas("title", 400, 400)
+# it also takes an optional RgbaColor as background
 
 renderCanvas({
   "type": "group",
@@ -19,6 +22,12 @@ renderCanvas({
 })
 
 takeCanvasEvents()
+```
+
+Try in dev:
+
+```
+nimble t
 ```
 
 ### Specs

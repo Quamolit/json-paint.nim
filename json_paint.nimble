@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.0.2"
+version       = "0.0.3"
 author        = "jiyinyiyong"
 description   = "JSON DSL for canvas rendering"
 license       = "MIT"
@@ -15,5 +15,5 @@ requires "sdl2"
 requires "cairo"
 
 
-task once, "run once":
+task t, "run once":
   exec "nim compile --verbosity:0 --hints:off --threads:on -r tests/demo.nim"

@@ -3,7 +3,7 @@
 import json
 import os
 
-import json_paint/canvas
+import json_paint
 
 # probably just a demo for using
 proc startRenderLoop() =
@@ -30,7 +30,8 @@ proc startRenderLoop() =
     takeCanvasEvents()
 
 proc ap1() =
-  initCanvas("This is a title", 600, 300)
+  let bg: RgbaColor = (0.1,0.1,0.1,1.0)
+  initCanvas("This is a title", 600, 300, bg)
   renderCanvas(%* {
     "type": "group",
     "children": [

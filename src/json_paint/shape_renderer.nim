@@ -1,33 +1,22 @@
 
-import sdl2
 import cairo
 import json
 import math
 
-import ./errors
+import ./error_util
 
-const
-  rmask = uint32 0x00ff0000
-  gmask = uint32 0x0000ff00
-  bmask = uint32 0x000000ff
-  amask = uint32 0xff000000
+var verboseMode* = false
 
-var surface: ptr cairo.Surface
-var renderer: RendererPtr
-var mainSurface: sdl2.SurfacePtr
+type RgbaColor* = tuple[r: float, g: float, b: float, a: float]
+type JsonPosition = tuple[x: float, y: float]
 
-var verboseMode = false
-
-type Color = tuple[r: float, g: float, b: float, a: float]
-type Position = tuple[x: float, y: float]
-
-proc rgb*(r, g, b, a: float = 1): Color =
+proc rgb*(r, g, b, a: float = 1): RgbaColor =
   return (r: r/100, g: g/100, b: b/100, a: a)
 
-const failedColor: Color = (100.0, 0.0, 0.0, 1.0)
+const failedColor: RgbaColor = (100.0, 0.0, 0.0, 1.0)
 
 # fallbacks to red
-proc readJsonColor*(raw: JsonNode): Color =
+proc readJsonColor*(raw: JsonNode): RgbaColor =
   if raw.kind != JObject:
     return failedColor
   let r = if raw.contains("r"): raw["r"].getFloat else: 0
@@ -36,7 +25,7 @@ proc readJsonColor*(raw: JsonNode): Color =
   let a = if raw.contains("a"): raw["a"].getFloat else: 1
   return rgb(r, g, b, a)
 
-proc readPointVec(raw: JsonNode): Position =
+proc readPointVec(raw: JsonNode): JsonPosition =
   if raw.kind != JArray:
     return (0.0, 0.0)
   if raw.elems.len < 2:
@@ -46,17 +35,8 @@ proc readPointVec(raw: JsonNode): Position =
   let y = raw.elems[1].getFloat
   return (x, y)
 
-proc initCanvas*(title: string, w: int, h: int) =
-
-  discard sdl2.init(INIT_EVERYTHING)
-
-  let window = createWindow(title, 0, 0, cint w, cint h, SDL_WINDOW_SHOWN)
-  surface = imageSurfaceCreate(FORMAT_ARGB32, cint w, cint h)
-  renderer = createRenderer(window, -1, 0)
-  mainSurface = createRGBSurface(0, cint w, cint h, 32, rmask, gmask, bmask, amask)
-
 # mutual recursion
-proc processJsonTree(ctx: ptr Context, tree: JsonNode): void
+proc processJsonTree*(ctx: ptr Context, tree: JsonNode): void
 
 proc renderArc(ctx: ptr Context, tree: JsonNode) =
   let x = if tree.contains("x"): tree["x"].getFloat else: 0
@@ -102,7 +82,7 @@ proc renderGroup(ctx: ptr Context, tree: JsonNode) =
       showError("Unknown children" & $children.kind)
 
 proc renderPolyline(ctx: ptr Context, tree: JsonNode) =
-  let basePoint: Position = if tree.contains("from"): readPointVec(tree["from"]) else: (0.0, 0.0)
+  let basePoint: JsonPosition = if tree.contains("from"): readPointVec(tree["from"]) else: (0.0, 0.0)
   ctx.moveTo basePoint.x, basePoint.y
   if tree.contains("stops"):
     let stops = tree["stops"]
@@ -222,7 +202,7 @@ proc callOps(ctx: ptr Context, tree: JsonNode) =
     else:
       echo "WARNING: unknown op type: ", opType
 
-proc processJsonTree(ctx: ptr Context, tree: JsonNode) =
+proc processJsonTree*(ctx: ptr Context, tree: JsonNode) =
   if verboseMode:
     echo tree.pretty
 
@@ -248,43 +228,8 @@ proc processJsonTree(ctx: ptr Context, tree: JsonNode) =
         echo tree.pretty
         showError("Unknown type")
     else:
-      raise newException(ValueError, "Expects a `type` field on JSON data")
+      showError("Expects a `type` field on JSON data")
   else:
     echo "Invalid JSON node:"
     echo pretty(tree)
-    raise newException(ValueError, "Unexpected JSON structure for rendering")
-
-proc renderCanvas*(tree: JsonNode) =
-  ## Called every frame by main while loop
-
-  # draw shiny sphere on gradient background
-  var ctx = surface.create()
-
-  # clear whole canvas before redraw
-  ctx.setSourceRGB(0.3, 0.3, 0.3)
-  ctx.setOperator(OperatorSource)
-  ctx.paint()
-
-  # reset operator
-  ctx.setOperator(OperatorOver)
-
-  ctx.processJsonTree(tree)
-
-  # cairo surface -> sdl serface -> sdl texture -> copy to render
-  var dataPtr = surface.getData()
-  mainSurface.pixels = dataPtr
-  let mainTexture = renderer.createTextureFromSurface(mainSurface)
-  renderer.copy(mainTexture, nil, nil)
-  renderer.present()
-
-proc takeCanvasEvents*() =
-  var event: sdl2.Event
-  while pollEvent(event):
-    discard
-    # if event.kind != MouseMotion:
-    #   echo "event: ", event.kind
-    if event.kind == QuitEvent:
-      quit(0)
-
-proc setJsonPaintVervose*(v: bool) =
-  verboseMode = v
+    showError("Unexpected JSON structure for rendering")
