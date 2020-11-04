@@ -126,7 +126,7 @@ path: [
 ]
 ```
 
-### Polyline
+* Polyline
 
 ```coffee
 type: 'polyline'
