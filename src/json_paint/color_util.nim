@@ -1,6 +1,6 @@
 
 import json
-import strformat
+# import strformat
 
 # based on algorithm
 # https://stackoverflow.com/a/9493060/883571
@@ -34,8 +34,6 @@ proc hslToRgb*(h0, s0, l0: float, a: float): RgbaColor =
     let g = hslHelper(p, q, h)
     let b = hslHelper(p, q, h - 1/3)
 
-    echo fmt"rgb: {r} {g} {b} {a}"
-
     return (r, g, b, a)
 
 # fallbacks to red
@@ -48,7 +46,6 @@ proc readJsonColor*(raw: JsonNode): RgbaColor =
     let s = raw.elems[1].getFloat
     let l = raw.elems[2].getFloat
     let a = if raw.elems.len >= 4: raw.elems[3].getFloat else: 1
-    echo fmt"hsl: {h} {s} {l} {a}"
     return hslToRgb(h, s, l, a)
 
   if raw.kind == JObject:
