@@ -55,23 +55,12 @@ proc ap1() =
       {
         "type": "ops",
         "ops": [
-          {
-            "type": "move-to",
-            "x": 100,
-            "y": 100
-          },
-          {
-            "type": "line-to",
-            "x": 300,
-            "y": 200,
-          },
-          {
-            "type": "source-rgb",
-            "color": [180, 80, 77]
-          },
-          {
-            "type": "stroke"
-          }
+          ["move-to", [100, 100]],
+          ["move-to", [300, 200]],
+          ["source-rgb", [180, 80, 77]],
+          ["stroke"],
+          ["rectangle", [200, 200], [40, 40]],
+          ["stroke"]
         ]
       }
     ]

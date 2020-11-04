@@ -85,44 +85,20 @@ radius: 1
 type: 'ops'
 x: 1
 y: 1
-path: [
-  type: 'move-to', x: 1, y: 1
-,
-  type: 'stroke'
-,
-  type: 'fill'
-,
-  type: 'stroke-preserve'
-,
-  type: 'fill-preserve'
-,
-  type: 'line-width', width: 1
-,
-  type: 'source-rgb', color: Color
-,
-  type: 'line-to', x: 1, y: 1
-,
-  type: 'relative-line-to', x: 1, y: 1
-,
-  type: 'curve-to', path: [
-    [1, 2],
-    [3, 4],
-    [5, 6]
-  ]
-,
-  type: 'relative-curve-to', path: [
-    [1, 2],
-    [3, 4],
-    [5, 6]
-  ]
-,
-  type: 'arc'
-  x: 1
-  y: 1
-  radius: 1
-  'start-angle': 0
-  'end-angle': 6.28
-  'negative?': false
+ops: [
+  ['stroke'],
+  ['fill'],
+  ['stroke-preserve'],
+  ['fill-preserve'],
+  ['line-width', 1],
+  ['source-rgb', Color],
+  ['move-to', [1, 1]],
+  ['line-to', [1, 1]],
+  ['relative-line-to', [1, 1]],
+  ['curve-to', [1, 2], [3, 4], [5, 6]],
+  ['relative-curve-to', [1, 2], [3, 4], [5, 6]],
+  ['arc', [1, 2], 1, [0, 6.28], false],
+  ['close-path']
 ]
 ```
 

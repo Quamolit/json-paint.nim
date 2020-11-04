@@ -137,13 +137,14 @@ proc renderText(ctx: ptr Context, tree: JsonNode) =
 proc callOps(ctx: ptr Context, tree: JsonNode) =
   if tree.contains("ops").not or tree["ops"].kind != JArray: showError("Expects `ops` field")
   for item in tree["ops"].elems:
-    if item.contains("type").not: showError("Expects `type` field")
-    let opType = item["type"].getStr
+    if item.kind != JArray: showError("Expects list in ops")
+    if item.elems.len < 1: showError("Expects `type` field at index `0`")
+    let opType = item[0].getStr
     case opType
     of "move-to":
-      let x = if item.contains("x"): item["x"].getFloat else: 0
-      let y = if item.contains("y"): item["y"].getFloat else: 0
-      ctx.moveTo x, y
+      if item.elems.len < 2: showError("Expects a point at index 1")
+      let point = readPointVec item[1]
+      ctx.moveTo point.x, point.y
     of "stroke":
       ctx.stroke()
     of "fill":
@@ -153,37 +154,52 @@ proc callOps(ctx: ptr Context, tree: JsonNode) =
     of "fill-preserve":
       ctx.fillPreserve()
     of "line-width":
-      let width = if item.contains("width"): item["width"].getFloat else: 0
-      ctx.setLineWidth width
+      if item.elems.len < 2: showError("Expects width at index 1")
+      ctx.setLineWidth item.elems[1].getFloat
     of "source-rgb":
-      let color = if item.contains("color"): readJsonColor(item["color"]) else: failedColor
+      if item.elems.len < 2: showError("Expects color at index 1 for source-rgb")
+      let color = readJsonColor(item.elems[1])
       ctx.setSourceRgba color.r, color.g, color.b, color.a
     of "line-to":
-      let x = if item.contains("x"): item["x"].getFloat else: 0
-      let y = if item.contains("y"): item["y"].getFloat else: 0
-      ctx.lineTo x, y
+      if item.elems.len < 2: showError("Expects point at index 1 for line-to")
+      let point = readPointVec item.elems[1]
+      ctx.lineTo point.x, point.y
     of "relative-line-to":
-      let x = if item.contains("x"): item["x"].getFloat else: 0
-      let y = if item.contains("y"): item["y"].getFloat else: 0
-      ctx.relLineTo x, y
+      if item.elems.len < 2: showError("Expects point at index 1 for relative-line-to")
+      let point = readPointVec item.elems[1]
+      ctx.relLineTo point.x, point.y
     of "curve-to":
-      if item.contains("path").not: showError("Expects `path` field in curve")
-      let controlPoints = item["path"]
-      if controlPoints.kind != JArray or controlPoints.elems.len < 3: showError("Expects path or 3")
-      let p0 = readPointVec controlPoints.elems[0]
-      let p1 = readPointVec controlPoints.elems[1]
-      let p2 = readPointVec controlPoints.elems[2]
+      if item.elems.len < 4: showError("Expects 3 points for curve-to")
+      let p0 = readPointVec item.elems[1]
+      let p1 = readPointVec item.elems[2]
+      let p2 = readPointVec item.elems[3]
       ctx.curveTo p0.x, p0.y, p1.x, p1.y, p2.x, p2.y
     of "relative-curve-to":
-      if item.contains("path").not: showError("Expects `path` field in curve")
-      let controlPoints = item["path"]
-      if controlPoints.kind != JArray or controlPoints.elems.len < 3: showError("Expects path or 3")
-      let p0 = readPointVec controlPoints.elems[0]
-      let p1 = readPointVec controlPoints.elems[1]
-      let p2 = readPointVec controlPoints.elems[2]
+      if item.elems.len < 4: showError("Expects 3 points for relative-curve-to")
+      let p0 = readPointVec item.elems[1]
+      let p1 = readPointVec item.elems[2]
+      let p2 = readPointVec item.elems[3]
       ctx.relCurveTo p0.x, p0.y, p1.x, p1.y, p2.x, p2.y
     of "arc":
-      renderArc(ctx, item)
+      if item.elems.len < 4: showError("Expects 3~4 points for arc")
+      let point = readPointVec item.elems[1]
+      let radius = item.elems[2].getFloat
+      let angle = readPointVec item.elems[3] # actuall start-angle/end-angle
+
+      let negative = if tree.elems.len >= 5: tree.elems[4].getBool else: false
+
+      if negative:
+        ctx.arcNegative(point.x, point.y, radius, angle.x, angle.y)
+      else:
+        ctx.arc(point.x, point.y, radius, angle.x, angle.y)
+    of "rectangle":
+      if item.elems.len < 3: showError("Expects 2 arguments for rectangle")
+      let point = readPointVec item.elems[1]
+      let size = readPointVec item.elems[2]
+      echo "point", point, size
+      ctx.rectangle point.x, point.y, size.x, size.y
+    of "close-path":
+      ctx.closePath()
     else:
       echo "WARNING: unknown op type: ", opType
 
