@@ -196,7 +196,6 @@ proc callOps(ctx: ptr Context, tree: JsonNode) =
       if item.elems.len < 3: showError("Expects 2 arguments for rectangle")
       let point = readPointVec item.elems[1]
       let size = readPointVec item.elems[2]
-      echo "point", point, size
       ctx.rectangle point.x, point.y, size.x, size.y
     of "close-path":
       ctx.closePath()

@@ -19,7 +19,9 @@ proc startRenderLoop() =
   while true:
     echo "loop"
     sleep(400)
-    takeCanvasEvents()
+    takeCanvasEvents(proc(event: JsonNode) =
+      echo "event: ", event
+    )
 
 proc ap1() =
   let bg = hslToRgb(0,0,10,1)
@@ -67,9 +69,13 @@ proc ap1() =
   })
 
   while true:
-    echo "loop"
-    sleep(400)
-    takeCanvasEvents()
+    sleep(160)
+    takeCanvasEvents(proc(event: JsonNode) =
+      if event.kind == JObject:
+        if event["type"].getStr == "quit":
+          quit 0
+      echo "event: ", event
+    )
 
 ap1()
 

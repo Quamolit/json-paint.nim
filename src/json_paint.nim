@@ -52,14 +52,70 @@ proc renderCanvas*(tree: JsonNode) =
   renderer.copy(mainTexture, nil, nil)
   renderer.present()
 
-proc takeCanvasEvents*() =
+proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
   var event: sdl2.Event
   while pollEvent(event):
-    discard
-    # if event.kind != MouseMotion:
-    #   echo "event: ", event.kind
-    if event.kind == QuitEvent:
-      quit(0)
+    case event.kind
+    of MouseMotion:
+      # echo "mouse motion: ", event.motion.x, ",", event.motion.y, " ", event.motion[]
+      handleEvent(%* {
+        "type": "mouse-motion",
+        "x": event.motion.x,
+        "y": event.motion.y
+      })
+    of KeyDown:
+      # echo "keydown event: ", event.key[]
+      handleEvent(%* {
+        "type": "key-down",
+        "sym": event.key.keysym.sym,
+        "repeat": event.key.repeat,
+        "scancode": $event.key.keysym.scancode,
+      })
+    of TextInput:
+      # echo "input: ", event.text.text[0]
+      handleEvent(%* {
+        "type": "text-input",
+        "text": $event.text.text[0]
+      })
+    of KeyUp:
+      handleEvent(%* {
+        "type": "key-up",
+        "sym": event.key.keysym.sym,
+        "repeat": event.key.repeat,
+        "scancode": $event.key.keysym.scancode,
+      })
+    of QuitEvent:
+      handleEvent(%* {
+        "type": "quit"
+      })
+    of MouseButtonDown:
+      # echo "mouse down: ", event.button[]
+      handleEvent(%* {
+        "type": "mouse-button-down",
+        "clicks": event.button[].clicks,
+        "x": event.button[].x,
+        "y": event.button[].y,
+      })
+    of MouseButtonUp:
+      # echo "mouse up: ", event.button[]
+      handleEvent(%* {
+        "type": "mouse-button-up",
+        "clicks": event.button[].clicks,
+        "x": event.button[].x,
+        "y": event.button[].y,
+      })
+    of WindowEvent:
+      # echo "window event: ", event.window[]
+      handleEvent(%* {
+        "type": "window",
+        "event": $event.window[].event
+        })
+    of AudioDeviceAdded:
+      discard
+    of ClipboardUpdate:
+      discard
+    else:
+      echo "unkown event kind: ", event.kind
 
 proc setJsonPaintVerbose*(v: bool) =
   verboseMode = v
