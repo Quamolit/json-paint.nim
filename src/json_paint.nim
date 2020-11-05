@@ -9,23 +9,27 @@ import json_paint/color_util
 var surface: ptr cairo.Surface
 var renderer: RendererPtr
 var mainSurface: sdl2.SurfacePtr
+var window: WindowPtr
 
 var bgBlack: RgbaColor = (0.0, 0.0, 0.0, 1.0)
+
+const
+  rmask = uint32 0x00ff0000
+  gmask = uint32 0x0000ff00
+  bmask = uint32 0x000000ff
+  amask = uint32 0xff000000
 
 proc initCanvas*(title: string, w: int, h: int, bg: RgbaColor = bgBlack) =
 
   discard sdl2.init(INIT_EVERYTHING)
 
-  let window = createWindow(title, 0, 0, cint w, cint h, SDL_WINDOW_SHOWN)
+  # window = createWindow(title, 0, 0, cint w, cint h, SDL_WINDOW_SHOWN)
+  window = createWindow(title, 0, 0, cint w, cint h, SDL_WINDOW_RESIZABLE)
+
   surface = imageSurfaceCreate(FORMAT_ARGB32, cint w, cint h)
   renderer = createRenderer(window, -1, 0)
 
   bgBlack = bg
-  const
-    rmask = uint32 0x00ff0000
-    gmask = uint32 0x0000ff00
-    bmask = uint32 0x000000ff
-    amask = uint32 0xff000000
 
   mainSurface = createRGBSurface(0, cint w, cint h, 32, rmask, gmask, bmask, amask)
 
@@ -106,10 +110,25 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
       })
     of WindowEvent:
       # echo "window event: ", event.window[]
-      handleEvent(%* {
-        "type": "window",
-        "event": $event.window[].event
+      case event.window[].event
+      of WindowEvent_Resized:
+        let newSize = window.getSize()
+
+        surface = imageSurfaceCreate(FORMAT_ARGB32, cint newSize.x, cint newSize.y)
+        mainSurface = createRGBSurface(0, cint newSize.x, cint newSize.y, 32, rmask, gmask, bmask, amask)
+
+        handleEvent(%* {
+          "type": "window-resized",
+          "x": newSize.x,
+          "y": newSize.y,
         })
+      else:
+
+        handleEvent(%* {
+          "type": "window",
+          "event": $event.window[].event
+        })
+
     of AudioDeviceAdded:
       discard
     of ClipboardUpdate:
