@@ -23,9 +23,7 @@ proc startRenderLoop() =
       echo "event: ", event
     )
 
-proc ap1() =
-  let bg = hslToRgb(0,0,10,1)
-  initCanvas("This is a title", 600, 300, bg)
+proc renderSomething() =
   renderCanvas(%* {
     "type": "group",
     "children": [
@@ -68,13 +66,22 @@ proc ap1() =
     ]
   })
 
+proc ap1() =
+  let bg = hslToRgb(0,0,10,1)
+  initCanvas("This is a title", 600, 300, bg)
+  renderSomething()
+
   while true:
     sleep(160)
     takeCanvasEvents(proc(event: JsonNode) =
       if event.kind == JObject:
-        if event["type"].getStr == "quit":
+        case event["type"].getStr
+        of "quit":
           quit 0
-      echo "event: ", event
+        of "window-resized":
+          renderSomething()
+        else:
+          echo "event: ", event
     )
 
 ap1()

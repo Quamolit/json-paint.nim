@@ -171,7 +171,13 @@ y: 100
 
 ```coffee
 type: 'window'
-"event": "WindowEvent_FocusGained"
+event: "WindowEvent_FocusGained"
+```
+
+```coffee
+type: 'window-resized'
+x: 100
+y: 100
 ```
 
 ### License
