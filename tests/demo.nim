@@ -19,7 +19,9 @@ proc startRenderLoop() =
   while true:
     echo "loop"
     sleep(400)
-    takeCanvasEvents()
+    takeCanvasEvents(proc(event: JsonNode) =
+      echo "event: ", event
+    )
 
 proc ap1() =
   let bg = hslToRgb(0,0,10,1)
@@ -55,32 +57,25 @@ proc ap1() =
       {
         "type": "ops",
         "ops": [
-          {
-            "type": "move-to",
-            "x": 100,
-            "y": 100
-          },
-          {
-            "type": "line-to",
-            "x": 300,
-            "y": 200,
-          },
-          {
-            "type": "source-rgb",
-            "color": [180, 80, 77]
-          },
-          {
-            "type": "stroke"
-          }
+          ["move-to", [100, 100]],
+          ["move-to", [300, 200]],
+          ["source-rgb", [180, 80, 77]],
+          ["stroke"],
+          ["rectangle", [200, 200], [40, 40]],
+          ["stroke"]
         ]
       }
     ]
   })
 
   while true:
-    echo "loop"
-    sleep(400)
-    takeCanvasEvents()
+    sleep(160)
+    takeCanvasEvents(proc(event: JsonNode) =
+      if event.kind == JObject:
+        if event["type"].getStr == "quit":
+          quit 0
+      echo "event: ", event
+    )
 
 ap1()
 

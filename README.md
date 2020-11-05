@@ -21,7 +21,12 @@ renderCanvas({
   "children": [] # see specs for currently supported shapes
 })
 
-takeCanvasEvents()
+takeCanvasEvents(proc(event: JsonNode) =
+  if event.kind == JObject:
+    if event["type"].getStr == "quit":
+      quit 0
+  echo "event: ", event
+)
 
 hslToRgb(0,0,10,1)
 ```
@@ -85,44 +90,20 @@ radius: 1
 type: 'ops'
 x: 1
 y: 1
-path: [
-  type: 'move-to', x: 1, y: 1
-,
-  type: 'stroke'
-,
-  type: 'fill'
-,
-  type: 'stroke-preserve'
-,
-  type: 'fill-preserve'
-,
-  type: 'line-width', width: 1
-,
-  type: 'source-rgb', color: Color
-,
-  type: 'line-to', x: 1, y: 1
-,
-  type: 'relative-line-to', x: 1, y: 1
-,
-  type: 'curve-to', path: [
-    [1, 2],
-    [3, 4],
-    [5, 6]
-  ]
-,
-  type: 'relative-curve-to', path: [
-    [1, 2],
-    [3, 4],
-    [5, 6]
-  ]
-,
-  type: 'arc'
-  x: 1
-  y: 1
-  radius: 1
-  'start-angle': 0
-  'end-angle': 6.28
-  'negative?': false
+ops: [
+  ['stroke'],
+  ['fill'],
+  ['stroke-preserve'],
+  ['fill-preserve'],
+  ['line-width', 1],
+  ['source-rgb', Color],
+  ['move-to', [1, 1]],
+  ['line-to', [1, 1]],
+  ['relative-line-to', [1, 1]],
+  ['curve-to', [1, 2], [3, 4], [5, 6]],
+  ['relative-curve-to', [1, 2], [3, 4], [5, 6]],
+  ['arc', [1, 2], 1, [0, 6.28], false],
+  ['close-path']
 ]
 ```
 
@@ -141,6 +122,56 @@ stops: [
 'line-width': 1
 'line-join': 'round' # 'round' | 'milter' | 'bevel'
 'fill-color': Color
+```
+
+### Events
+
+```coffee
+type: 'mouse-motion'
+x: 1
+y: 1
+```
+
+```coffee
+type: 'key-down'
+sym: 97
+repeat: false
+scancode: "SDL_SCANCODE_D"
+```
+
+```coffee
+type: 'key-up'
+sym: 97
+repeat: false
+scancode: "SDL_SCANCODE_D"
+```
+
+```coffee
+type: 'text-input',
+text: 'a'
+```
+
+```coffee
+type: 'quit'
+```
+
+```coffee
+type: 'mouse-button-down'
+clicks: 1
+x: 100
+y: 100
+```
+
+```coffee
+type: 'mouse-button-up'
+clicks: 1
+x: 100
+y: 100
+```
+
+```coffee
+type: 'window'
+"event": "WindowEvent_FocusGained"
 ```
 
 ### License
