@@ -124,12 +124,24 @@ stops: [
 'fill-color': Color
 ```
 
+* Interact Area
+
+```coffee
+type: 'touch-area'
+path: ["a", 1] # JSON
+x: 1
+y: 1
+radius: 20
+events: ["touch-down", "touch-up", "touch-motion"]
+```
+
 ### Events
 
 ```coffee
 type: 'mouse-motion'
 x: 1
 y: 1
+path: [] # data, defined in "touch-area"
 ```
 
 ```coffee
@@ -158,6 +170,7 @@ type: 'quit'
 ```coffee
 type: 'mouse-button-down'
 clicks: 1
+path: [] # data, defined in "touch-area"
 x: 100
 y: 100
 ```
@@ -165,6 +178,7 @@ y: 100
 ```coffee
 type: 'mouse-button-up'
 clicks: 1
+path: [] # data, defined in "touch-area"
 x: 100
 y: 100
 ```

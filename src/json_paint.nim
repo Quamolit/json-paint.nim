@@ -2,9 +2,11 @@
 import sdl2
 import cairo
 import json
+import options
 
 import json_paint/shape_renderer
 import json_paint/color_util
+import json_paint/touches
 
 var surface: ptr cairo.Surface
 var renderer: RendererPtr
@@ -47,7 +49,9 @@ proc renderCanvas*(tree: JsonNode) =
   # reset operator
   ctx.setOperator(OperatorOver)
 
-  ctx.processJsonTree(tree)
+  let base = TreeContext(x: 0, y: 0)
+  resetTouchStack()
+  ctx.processJsonTree(tree, base)
 
   # cairo surface -> sdl serface -> sdl texture -> copy to render
   var dataPtr = surface.getData()
@@ -62,11 +66,22 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
     case event.kind
     of MouseMotion:
       # echo "mouse motion: ", event.motion.x, ",", event.motion.y, " ", event.motion[]
-      handleEvent(%* {
-        "type": "mouse-motion",
-        "x": event.motion.x,
-        "y": event.motion.y
-      })
+      let x = event.motion.x
+      let y = event.motion.y
+      let target = findTouchArea(x, y, touchMotion)
+      if target.isSome:
+        handleEvent(%* {
+          "type": "mouse-motion",
+          "x": event.motion.x,
+          "y": event.motion.y,
+          "path": target.get.path,
+        })
+      else:
+        handleEvent(%* {
+          "type": "mouse-motion",
+          "x": event.motion.x,
+          "y": event.motion.y
+        })
     of KeyDown:
       # echo "keydown event: ", event.key[]
       handleEvent(%* {
@@ -94,20 +109,44 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
       })
     of MouseButtonDown:
       # echo "mouse down: ", event.button[]
-      handleEvent(%* {
-        "type": "mouse-button-down",
-        "clicks": event.button[].clicks,
-        "x": event.button[].x,
-        "y": event.button[].y,
-      })
+      let x = event.button[].x
+      let y = event.button[].y
+      let target = findTouchArea(x, y, touchDown)
+      if target.isSome:
+        handleEvent(%* {
+          "type": "mouse-button-down",
+          "clicks": event.button[].clicks,
+          "path": target.get.path,
+          "x": x,
+          "y": y,
+        })
+      else:
+        handleEvent(%* {
+          "type": "mouse-button-down",
+          "clicks": event.button[].clicks,
+          "x": x,
+          "y": y,
+        })
     of MouseButtonUp:
       # echo "mouse up: ", event.button[]
-      handleEvent(%* {
-        "type": "mouse-button-up",
-        "clicks": event.button[].clicks,
-        "x": event.button[].x,
-        "y": event.button[].y,
-      })
+      let x = event.button[].x
+      let y = event.button[].y
+      let target = findTouchArea(x, y, touchUp)
+      if target.isSome:
+        handleEvent(%* {
+          "type": "mouse-button-up",
+          "clicks": event.button[].clicks,
+          "path": target.get.path,
+          "x": event.button[].x,
+          "y": event.button[].y,
+        })
+      else:
+        handleEvent(%* {
+          "type": "mouse-button-up",
+          "clicks": event.button[].clicks,
+          "x": event.button[].x,
+          "y": event.button[].y,
+        })
     of WindowEvent:
       # echo "window event: ", event.window[]
       case event.window[].event
