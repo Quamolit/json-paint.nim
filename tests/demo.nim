@@ -26,6 +26,8 @@ proc startRenderLoop() =
 proc renderSomething() =
   renderCanvas(%* {
     "type": "group",
+    "x": 100,
+    "y": 30,
     "children": [
       {
         "type": "arc",
@@ -62,6 +64,13 @@ proc renderSomething() =
           ["rectangle", [200, 200], [40, 40]],
           ["stroke"]
         ]
+      },
+      {
+        "type": "touch-area",
+        "x": 200,
+        "y": 80,
+        "path": ["a", 1],
+        "events": ["touch-down", "touch-motion"]
       }
     ]
   })

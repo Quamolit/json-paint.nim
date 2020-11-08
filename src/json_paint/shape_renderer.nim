@@ -5,10 +5,15 @@ import math
 
 import ./error_util
 import ./color_util
+import ./touches
 
 var verboseMode* = false
 
 type JsonPosition = tuple[x: float, y: float]
+
+type TreeContext* = object
+  x*: float
+  y*: float
 
 proc readPointVec(raw: JsonNode): JsonPosition =
   if raw.kind != JArray:
@@ -21,11 +26,11 @@ proc readPointVec(raw: JsonNode): JsonPosition =
   return (x, y)
 
 # mutual recursion
-proc processJsonTree*(ctx: ptr Context, tree: JsonNode): void
+proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext): void
 
-proc renderArc(ctx: ptr Context, tree: JsonNode) =
-  let x = if tree.contains("x"): tree["x"].getFloat else: 0
-  let y = if tree.contains("y"): tree["y"].getFloat else: 0
+proc renderArc(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
+  let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
   let radius = if tree.contains("radius"): tree["radius"].getFloat else: 20
   let startAngle = if tree.contains("start-angle"): tree["start-angle"].getFloat else: 0
   let endAngle = if tree.contains("end-angle"): tree["end-angle"].getFloat else: 2 * PI
@@ -57,30 +62,33 @@ proc renderArc(ctx: ptr Context, tree: JsonNode) =
   if hasStroke.not and hasFill.not:
     echo "WARNING: arc is invisible."
 
-proc renderGroup(ctx: ptr Context, tree: JsonNode) =
+proc renderGroup(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if tree.contains("children"):
+    let x = if tree.contains("x"): tree["x"].getFloat else: 0
+    let y = if tree.contains("y"): tree["y"].getFloat else: 0
     let children = tree["children"]
     if children.kind == JArray:
       for item in children.elems:
-        ctx.processJsonTree item
+        let newBase = TreeContext(x: base.x + x, y: base.y + y)
+        ctx.processJsonTree item, newBase
     else:
       showError("Unknown children" & $children.kind)
 
-proc renderPolyline(ctx: ptr Context, tree: JsonNode) =
+proc renderPolyline(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   let basePoint: JsonPosition = if tree.contains("from"): readPointVec(tree["from"]) else: (0.0, 0.0)
-  ctx.moveTo basePoint.x, basePoint.y
+  ctx.moveTo basePoint.x + base.x, basePoint.y + base.y
   if tree.contains("stops"):
     let stops = tree["stops"]
     if stops.kind != JArray: showError("Expects array of stops")
     for stop in stops.elems:
       let point = readPointVec(stop)
-      ctx.lineTo point.x, point.y
+      ctx.lineTo point.x + base.x, point.y + base.y
   elif tree.contains("relative-stops"):
     let stops = tree["stops"]
     if stops.kind != JArray: showError("Expects array of relative stops")
     for stop in stops.elems:
       let point = readPointVec(stop)
-      ctx.lineTo basePoint.x + point.x, basePoint.y + point.y
+      ctx.lineTo basePoint.x + point.x + base.x, basePoint.y + point.y + base.y
   else:
     echo "WARNING: stops not defined"
 
@@ -110,9 +118,9 @@ proc renderPolyline(ctx: ptr Context, tree: JsonNode) =
     ctx.setSourceRgba(color.r, color.g, color.b, color.a)
     ctx.fill()
 
-proc renderText(ctx: ptr Context, tree: JsonNode) =
-  let x = if tree.contains("x"): tree["x"].getFloat else: 0
-  let y = if tree.contains("y"): tree["y"].getFloat else: 0
+proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
+  let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
   let fontSize = if tree.contains("font-size"): tree["font-size"].getFloat else: 14
   let text = if tree.contains("text"): tree["text"].getStr else: "TEXT"
   let align = if tree.contains("align"): tree["align"].getStr else: "left"
@@ -134,7 +142,7 @@ proc renderText(ctx: ptr Context, tree: JsonNode) =
   ctx.moveTo realX, realY
   ctx.showText text
 
-proc callOps(ctx: ptr Context, tree: JsonNode) =
+proc callOps(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if tree.contains("ops").not or tree["ops"].kind != JArray: showError("Expects `ops` field")
   for item in tree["ops"].elems:
     if item.kind != JArray: showError("Expects list in ops")
@@ -144,7 +152,7 @@ proc callOps(ctx: ptr Context, tree: JsonNode) =
     of "move-to":
       if item.elems.len < 2: showError("Expects a point at index 1")
       let point = readPointVec item[1]
-      ctx.moveTo point.x, point.y
+      ctx.moveTo point.x + base.x, point.y + base.y
     of "stroke":
       ctx.stroke()
     of "fill":
@@ -163,7 +171,7 @@ proc callOps(ctx: ptr Context, tree: JsonNode) =
     of "line-to":
       if item.elems.len < 2: showError("Expects point at index 1 for line-to")
       let point = readPointVec item.elems[1]
-      ctx.lineTo point.x, point.y
+      ctx.lineTo point.x + base.x, point.y + base.y
     of "relative-line-to":
       if item.elems.len < 2: showError("Expects point at index 1 for relative-line-to")
       let point = readPointVec item.elems[1]
@@ -173,7 +181,7 @@ proc callOps(ctx: ptr Context, tree: JsonNode) =
       let p0 = readPointVec item.elems[1]
       let p1 = readPointVec item.elems[2]
       let p2 = readPointVec item.elems[3]
-      ctx.curveTo p0.x, p0.y, p1.x, p1.y, p2.x, p2.y
+      ctx.curveTo p0.x + base.x, p0.y + base.y, p1.x + base.x, p1.y + base.y, p2.x + base.x, p2.y + base.y
     of "relative-curve-to":
       if item.elems.len < 4: showError("Expects 3 points for relative-curve-to")
       let p0 = readPointVec item.elems[1]
@@ -189,41 +197,61 @@ proc callOps(ctx: ptr Context, tree: JsonNode) =
       let negative = if tree.elems.len >= 5: tree.elems[4].getBool else: false
 
       if negative:
-        ctx.arcNegative(point.x, point.y, radius, angle.x, angle.y)
+        ctx.arcNegative(point.x + base.x, point.y + base.y, radius, angle.x, angle.y)
       else:
-        ctx.arc(point.x, point.y, radius, angle.x, angle.y)
+        ctx.arc(point.x + base.x, point.y + base.y, radius, angle.x, angle.y)
     of "rectangle":
       if item.elems.len < 3: showError("Expects 2 arguments for rectangle")
       let point = readPointVec item.elems[1]
       let size = readPointVec item.elems[2]
-      ctx.rectangle point.x, point.y, size.x, size.y
+      ctx.rectangle point.x + base.x, point.y + base.y, size.x, size.y
     of "close-path":
       ctx.closePath()
     else:
       echo "WARNING: unknown op type: ", opType
 
-proc processJsonTree*(ctx: ptr Context, tree: JsonNode) =
+proc renderTouchArea(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
+  let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
+  let radius = if tree.contains("radius"): tree["radius"].getFloat else: 20
+
+  ctx.arc(x, y, radius, 0, 2 * PI)
+
+  ctx.closePath()
+
+  ctx.setSourceRgba(0.9, 0.9, 0.5, 0.3)
+  ctx.setLineWidth(1.0)
+  ctx.strokePreserve()
+
+  ctx.setSourceRgba(0.7, 0.5, 0.8, 0.2)
+  ctx.fill()
+
+  addTouchArea(x, y, radius, tree)
+
+proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if verboseMode:
     echo tree.pretty
 
   case tree.kind
   of JArray:
     for item in tree.elems:
-      ctx.processJsonTree(item)
+      ctx.processJsonTree(item, base)
   of JObject:
     if tree.contains("type"):
       let nodeType = tree["type"].getStr
       case nodeType
       of "arc":
-        ctx.renderArc(tree)
+        ctx.renderArc(tree, base)
       of "group":
-        ctx.renderGroup(tree)
+        ctx.renderGroup(tree, base)
       of "polyline":
-        ctx.renderPolyline(tree)
+        ctx.renderPolyline(tree, base)
       of "text":
-        ctx.renderText(tree)
+        ctx.renderText(tree, base)
       of "ops":
-        ctx.callOps(tree)
+        ctx.callOps(tree, base)
+      of "touch-area":
+        ctx.renderTouchArea(tree, base)
       else:
         echo tree.pretty
         showError("Unknown type")
