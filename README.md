@@ -1,6 +1,4 @@
-
-JSON Paint
-----
+## JSON Paint
 
 > JSON based painter based on SDL2 and Cario.
 
@@ -47,7 +45,7 @@ This library uses hsl colors:
 [359,99,99,1]
 ```
 
-* Group
+- Group
 
 ```coffee
 type: 'group'
@@ -56,7 +54,7 @@ y: 1
 children: []
 ```
 
-* Text
+- Text
 
 ```coffee
 type: 'text'
@@ -69,7 +67,7 @@ color: Color
 align: "center" # 'left' | 'center' | 'right'
 ```
 
-* Arc
+- Arc
 
 ```coffee
 type: 'arc'
@@ -84,7 +82,7 @@ radius: 1
 'fill-color': Color
 ```
 
-* Operations
+- Operations
 
 ```coffee
 type: 'ops'
@@ -107,7 +105,7 @@ ops: [
 ]
 ```
 
-* Polyline
+- Polyline
 
 ```coffee
 type: 'polyline'
@@ -122,9 +120,10 @@ stops: [
 'line-width': 1
 'line-join': 'round' # 'round' | 'milter' | 'bevel'
 'fill-color': Color
+'skip-first?': false
 ```
 
-* Interact Area
+- Interact Area
 
 ```coffee
 type: 'touch-area'

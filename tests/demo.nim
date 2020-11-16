@@ -40,6 +40,7 @@ proc renderSomething() =
       {
         "type": "polyline",
         "from": [10, 10],
+        "skip-first?": true,
         "stops": [
           [40, 40], [40, 80], [70, 90], [200, 200]
         ],

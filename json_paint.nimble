@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.0.8"
+version       = "0.0.10"
 author        = "jiyinyiyong"
 description   = "JSON DSL for canvas rendering"
 license       = "MIT"
