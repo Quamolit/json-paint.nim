@@ -77,18 +77,25 @@ proc renderGroup(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
 proc renderPolyline(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   let basePoint: JsonPosition = if tree.contains("from"): readPointVec(tree["from"]) else: (0.0, 0.0)
   ctx.moveTo basePoint.x + base.x, basePoint.y + base.y
+  let skipFirst = if tree.contains("skip-first?"): tree["skip-first?"].getBool else: false
   if tree.contains("stops"):
     let stops = tree["stops"]
     if stops.kind != JArray: showError("Expects array of stops")
-    for stop in stops.elems:
+    for idx, stop in stops.elems:
       let point = readPointVec(stop)
-      ctx.lineTo point.x + base.x, point.y + base.y
+      if skipFirst and idx == 0:
+        ctx.moveTo point.x + base.x, point.y + base.y
+      else:
+        ctx.lineTo point.x + base.x, point.y + base.y
   elif tree.contains("relative-stops"):
     let stops = tree["relative-stops"]
     if stops.kind != JArray: showError("Expects array of relative stops")
-    for stop in stops.elems:
+    for idx, stop in stops.elems:
       let point = readPointVec(stop)
-      ctx.lineTo basePoint.x + point.x + base.x, basePoint.y + point.y + base.y
+      if skipFirst and idx == 0:
+        ctx.moveTo basePoint.x + point.x + base.x, basePoint.y + point.y + base.y
+      else:
+        ctx.lineTo basePoint.x + point.x + base.x, basePoint.y + point.y + base.y
   else:
     echo "WARNING: stops not defined"
 
