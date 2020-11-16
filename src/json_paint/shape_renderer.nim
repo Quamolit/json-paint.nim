@@ -84,7 +84,7 @@ proc renderPolyline(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
       let point = readPointVec(stop)
       ctx.lineTo point.x + base.x, point.y + base.y
   elif tree.contains("relative-stops"):
-    let stops = tree["stops"]
+    let stops = tree["relative-stops"]
     if stops.kind != JArray: showError("Expects array of relative stops")
     for stop in stops.elems:
       let point = readPointVec(stop)
