@@ -135,6 +135,7 @@ proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   let color = if tree.contains("color"): readJsonColor(tree["color"]) else: failedColor
   ctx.selectFontFace text.cstring, FontSlantNormal, FontWeightNormal
   ctx.setFontSize fontSize
+  ctx.setSourceRgba(color.r, color.g, color.b, color.a)
   var extents: TextExtents
   ctx.textExtents text.cstring, addr extents
   var realX = x - extents.xBearing
