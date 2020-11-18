@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.4"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.10"
 ```
 
 ```nim
@@ -123,7 +123,7 @@ stops: [
 'skip-first?': false
 ```
 
-- Interact Area
+- Touch Area
 
 ```coffee
 type: 'touch-area'
