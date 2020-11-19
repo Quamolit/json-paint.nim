@@ -6,10 +6,9 @@ import math
 import ./error_util
 import ./color_util
 import ./touches
+import ./types
 
 var verboseMode* = false
-
-type JsonPosition = tuple[x: float, y: float]
 
 type TreeContext* = object
   x*: float
