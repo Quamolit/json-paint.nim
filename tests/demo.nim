@@ -71,6 +71,7 @@ proc renderSomething() =
         "x": 200,
         "y": 80,
         "path": ["a", 1],
+        "action": ":demo",
         "events": ["touch-down", "touch-motion"]
       },
     ]

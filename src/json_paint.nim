@@ -68,19 +68,25 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
       # echo "mouse motion: ", event.motion.x, ",", event.motion.y, " ", event.motion[]
       let x = event.motion.x
       let y = event.motion.y
-      let target = findTouchArea(x, y, touchMotion)
-      if target.isSome:
+
+      let moved = calcMousePositionDelta(x, y)
+
+      if mousedownTracked:
         handleEvent(%* {
-          "type": "mouse-motion",
+          "type": "mouse-move",
           "x": event.motion.x,
           "y": event.motion.y,
-          "path": target.get.path,
+          "dx": moved.x,
+          "dy": moved.y,
+          "path": mousedownTrackedPath,
+          "action": mousedownTrackedAction,
+          "data": mousedownTrackedData,
         })
       else:
         handleEvent(%* {
-          "type": "mouse-motion",
+          "type": "mouse-move",
           "x": event.motion.x,
-          "y": event.motion.y
+          "y": event.motion.y,
         })
     of KeyDown:
       # echo "keydown event: ", event.key[]
@@ -112,17 +118,27 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
       let x = event.button[].x
       let y = event.button[].y
       let target = findTouchArea(x, y, touchDown)
+
+
       if target.isSome:
+        trackMousedownPoint(x, y)
+        mousedownTracked = true
+        mousedownTrackedPath = target.get.path
+        mousedownTrackedAction = target.get.action
+        mousedownTrackedData = target.get.data
+
         handleEvent(%* {
-          "type": "mouse-button-down",
+          "type": "mouse-down",
           "clicks": event.button[].clicks,
           "path": target.get.path,
+          "action": target.get.action,
+          "data": target.get.data,
           "x": x,
           "y": y,
         })
       else:
         handleEvent(%* {
-          "type": "mouse-button-down",
+          "type": "mouse-down",
           "clicks": event.button[].clicks,
           "x": x,
           "y": y,
@@ -131,22 +147,30 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
       # echo "mouse up: ", event.button[]
       let x = event.button[].x
       let y = event.button[].y
-      let target = findTouchArea(x, y, touchUp)
-      if target.isSome:
+
+      if mousedownTracked:
+        let moved = calcMousePositionDelta(x, y)
         handleEvent(%* {
-          "type": "mouse-button-up",
+          "type": "mouse-up",
           "clicks": event.button[].clicks,
-          "path": target.get.path,
+          "path": mousedownTrackedPath,
+          "action": mousedownTrackedAction,
+          "data": mousedownTrackedData,
           "x": event.button[].x,
           "y": event.button[].y,
+          "dx": moved.x,
+          "dy": moved.y,
         })
+        mousedownTracked = false
+
       else:
         handleEvent(%* {
-          "type": "mouse-button-up",
+          "type": "mouse-up",
           "clicks": event.button[].clicks,
           "x": event.button[].x,
           "y": event.button[].y,
         })
+
     of WindowEvent:
       # echo "window event: ", event.window[]
       case event.window[].event
