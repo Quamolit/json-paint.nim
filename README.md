@@ -135,7 +135,7 @@ data: Data # JSON
 x: 1
 y: 1
 radius: 20
-events: ["touch-down", "touch-up", "touch-motion"]
+events: ["mouse-down", "mouse-up", "mouse-move"]
 ```
 
 ### Events

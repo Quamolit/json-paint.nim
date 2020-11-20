@@ -42,11 +42,11 @@ proc addTouchArea*(x: float, y: float, radius: float, tree: JsonNode) =
     for item in tree["events"].elems:
       if item.kind == JString:
         case item.getStr
-          of "touch-down":
+          of "mouse-down":
             events.incl(touchDown)
-          of "touch-up":
+          of "mouse-up":
             events.incl(touchUp)
-          of "touch-motion":
+          of "mouse-move":
             events.incl(touchMotion)
           else:
             showError("Unexpected event: " & item.getStr)
