@@ -60,6 +60,7 @@ proc renderCanvas*(tree: JsonNode) =
   let mainTexture = renderer.createTextureFromSurface(mainSurface)
   renderer.copy(mainTexture, nil, nil)
   renderer.present()
+  mainTexture.destroy()
 
 proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
   var event: sdl2.Event
