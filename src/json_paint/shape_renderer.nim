@@ -141,7 +141,7 @@ proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   var extents: TextExtents
   ctx.textExtents text.cstring, addr extents
   var realX = x - extents.xBearing
-  case text
+  case align
   of "center":
     realX = x - extents.width / 2 - extents.xBearing
   of "right":
@@ -149,7 +149,7 @@ proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   of "left":
     discard
   else:
-    echo "unknown text align value: ", text
+    echo "WARNING: unknown align value " & align & ", expects left, center, right"
   let realY = y - extents.height / 2 - extents.yBearing
   ctx.moveTo realX, realY
   ctx.showText text

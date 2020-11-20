@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.12"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.16"
 ```
 
 ```nim

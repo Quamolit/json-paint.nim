@@ -52,6 +52,7 @@ proc renderCanvas*(tree: JsonNode) =
   let base = TreeContext(x: 0, y: 0)
   resetTouchStack()
   ctx.processJsonTree(tree, base)
+  ctx.destroy()
 
   # cairo surface -> sdl serface -> sdl texture -> copy to render
   var dataPtr = surface.getData()
