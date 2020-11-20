@@ -28,6 +28,7 @@ proc readPointVec(raw: JsonNode): JsonPosition =
 proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext): void
 
 proc renderArc(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  ctx.newPath()
   let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
   let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
   let radius = if tree.contains("radius"): tree["radius"].getFloat else: 20
@@ -74,6 +75,7 @@ proc renderGroup(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
       showError("Unknown children" & $children.kind)
 
 proc renderPolyline(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  ctx.newPath()
   let basePoint: JsonPosition = if tree.contains("from"): readPointVec(tree["from"]) else: (0.0, 0.0)
   ctx.moveTo basePoint.x + base.x, basePoint.y + base.y
   let skipFirst = if tree.contains("skip-first?"): tree["skip-first?"].getBool else: false
@@ -125,6 +127,7 @@ proc renderPolyline(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
     ctx.fill()
 
 proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  ctx.newPath()
   let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
   let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
   let fontSize = if tree.contains("font-size"): tree["font-size"].getFloat else: 14
@@ -150,6 +153,7 @@ proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   ctx.showText text
 
 proc callOps(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  ctx.newPath()
   if tree.contains("ops").not or tree["ops"].kind != JArray: showError("Expects `ops` field")
   for item in tree["ops"].elems:
     if item.kind != JArray: showError("Expects list in ops")
@@ -218,6 +222,7 @@ proc callOps(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
       echo "WARNING: unknown op type: ", opType
 
 proc renderTouchArea(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
+  ctx.newPath()
   let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
   let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
   let radius = if tree.contains("radius"): tree["radius"].getFloat else: 20
