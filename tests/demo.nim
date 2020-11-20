@@ -72,7 +72,6 @@ proc renderSomething() =
         "y": 80,
         "path": ["a", 1],
         "action": ":demo",
-        "events": ["mouse-down", "mouse-move"]
       },
     ]
   })

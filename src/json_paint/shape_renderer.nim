@@ -146,8 +146,10 @@ proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
     realX = x - extents.width / 2 - extents.xBearing
   of "right":
     realX = x - extents.width - extents.xBearing
-  else:
+  of "left":
     discard
+  else:
+    echo "unknown text align value: ", text
   let realY = y - extents.height / 2 - extents.yBearing
   ctx.moveTo realX, realY
   ctx.showText text
@@ -218,6 +220,8 @@ proc callOps(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
       ctx.rectangle point.x + base.x, point.y + base.y, size.x, size.y
     of "close-path":
       ctx.closePath()
+    of "new-path":
+      ctx.newPath()
     else:
       echo "WARNING: unknown op type: ", opType
 
