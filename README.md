@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.17"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.18"
 ```
 
 ```nim
@@ -41,7 +41,7 @@ Find example in [`tests/demo.nim`](tests/demo.nim).
 
 JSON described in CoffeeScript.
 
-This library uses hsl colors:
+This library uses HSL/HSLA colors:
 
 ```coffee
 [359,99,99,1]
@@ -96,7 +96,8 @@ ops: [
   ['stroke-preserve'],
   ['fill-preserve'],
   ['line-width', 1],
-  ['source-rgb', Color],
+  ['source-rgb', Color],  # which is actually using HSL colors
+  ['hsl', Color],         # alias for 'source-rgb'
   ['move-to', [1, 1]],
   ['line-to', [1, 1]],
   ['relative-line-to', [1, 1]],

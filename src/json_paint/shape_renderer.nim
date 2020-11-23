@@ -177,7 +177,7 @@ proc callOps(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
     of "line-width":
       if item.elems.len < 2: showError("Expects width at index 1")
       ctx.setLineWidth item.elems[1].getFloat
-    of "source-rgb":
+    of "source-rgb", "hsl":
       if item.elems.len < 2: showError("Expects color at index 1 for source-rgb")
       let color = readJsonColor(item.elems[1])
       ctx.setSourceRgba color.r, color.g, color.b, color.a
@@ -207,7 +207,7 @@ proc callOps(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
       let radius = item.elems[2].getFloat
       let angle = readPointVec item.elems[3] # actuall start-angle/end-angle
 
-      let negative = if tree.elems.len >= 5: tree.elems[4].getBool else: false
+      let negative = if item.elems.len >= 5: item.elems[4].getBool else: false
 
       if negative:
         ctx.arcNegative(point.x + base.x, point.y + base.y, radius, angle.x, angle.y)

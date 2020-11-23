@@ -73,6 +73,14 @@ proc renderSomething() =
         "path": ["a", 1],
         "action": ":demo",
       },
+      {
+        "type": "ops",
+        "ops": [
+          ["arc", [100, 100], 10, [0, 6.2], false],
+          ["source-rgb", [0, 80, 80]],
+          ["fill"],
+        ]
+      },
     ]
   })
 
