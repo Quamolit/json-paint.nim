@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.12"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.16"
 ```
 
 ```nim
@@ -103,7 +103,8 @@ ops: [
   ['curve-to', [1, 2], [3, 4], [5, 6]],
   ['relative-curve-to', [1, 2], [3, 4], [5, 6]],
   ['arc', [1, 2], 1, [0, 6.28], false],
-  ['close-path']
+  ['new-path'],
+  ['close-path'],
 ]
 ```
 
@@ -135,7 +136,6 @@ data: Data # JSON
 x: 1
 y: 1
 radius: 20
-events: ["mouse-down", "mouse-up", "mouse-move"]
 ```
 
 ### Events

@@ -50,7 +50,7 @@ proc renderSomething() =
       {
         "type": "text",
         "text": "this is a demo",
-        "align": "left",
+        "align": "center",
         "x": 40,
         "y": 40,
         "color": [140, 80, 76]
@@ -72,7 +72,6 @@ proc renderSomething() =
         "y": 80,
         "path": ["a", 1],
         "action": ":demo",
-        "events": ["mouse-down", "mouse-move"]
       },
     ]
   })
