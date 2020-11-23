@@ -248,6 +248,10 @@ proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if verboseMode:
     echo tree.pretty
 
+  if tree.kind == JNull:
+    echo "WARNING: null passed to tree processor"
+    return
+
   case tree.kind
   of JArray:
     for item in tree.elems:
@@ -272,7 +276,7 @@ proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
         echo tree.pretty
         showError("Unknown type")
     else:
-      showError("Expects a `type` field on JSON data")
+      showError("Expects a `type` field on JSON data: " & $tree)
   else:
     echo "Invalid JSON node:"
     echo pretty(tree)
