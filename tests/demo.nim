@@ -51,6 +51,8 @@ proc renderSomething() =
         "type": "text",
         "text": "this is a demo",
         "align": "center",
+        "font-face": "Menlo",
+        "font-weight": "normal",
         "x": 40,
         "y": 40,
         "color": [140, 80, 76]
