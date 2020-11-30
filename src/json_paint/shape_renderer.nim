@@ -252,7 +252,6 @@ proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
     echo tree.pretty
 
   if tree.kind == JNull:
-    echo "WARNING: null passed to tree processor"
     return
 
   case tree.kind

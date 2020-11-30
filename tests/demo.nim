@@ -83,6 +83,7 @@ proc renderSomething() =
           ["fill"],
         ]
       },
+      nil,
     ]
   })
 
