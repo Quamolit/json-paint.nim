@@ -133,9 +133,12 @@ proc renderText(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   let fontSize = if tree.contains("font-size"): tree["font-size"].getFloat else: 14
   let text = if tree.contains("text"): tree["text"].getStr else: "TEXT"
   let align = if tree.contains("align"): tree["align"].getStr else: "left"
-  let fontFamily = if tree.contains("font-family"): tree["font-family"].getStr else: "Arial"
+  let fontFace = if tree.contains("font-face"): tree["font-face"].getStr else: "Arial"
   let color = if tree.contains("color"): readJsonColor(tree["color"]) else: failedColor
-  ctx.selectFontFace text.cstring, FontSlantNormal, FontWeightNormal
+  var weight = FontWeightNormal
+  if tree.contains("font-weight") and tree["font-weight"].getStr() == "bold":
+    weight = FontWeightBold
+  ctx.selectFontFace fontFace.cstring, FontSlantNormal, weight
   ctx.setFontSize fontSize
   ctx.setSourceRgba(color.r, color.g, color.b, color.a)
   var extents: TextExtents
@@ -249,7 +252,6 @@ proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
     echo tree.pretty
 
   if tree.kind == JNull:
-    echo "WARNING: null passed to tree processor"
     return
 
   case tree.kind

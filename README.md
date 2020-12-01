@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.18"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.19"
 ```
 
 ```nim
@@ -64,7 +64,8 @@ x: 1
 y: 1
 text: 'DEMO'
 'font-size': 14
-'font-family': 'Arial'
+'font-face': 'Arial'
+'font-weight': 'normal',
 color: Color
 align: "center" # 'left' | 'center' | 'right'
 ```
