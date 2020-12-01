@@ -232,20 +232,37 @@ proc renderTouchArea(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   ctx.newPath()
   let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
   let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
-  let radius = if tree.contains("radius"): tree["radius"].getFloat else: 20
 
-  ctx.arc(x, y, radius, 0, 2 * PI)
+  let rectMode = if tree.contains("rect?"): tree["rect?"].getBool else: false
+  if rectMode:
+    let dx = if tree.contains("dx"): tree["dx"].getFloat else: 20
+    let dy = if tree.contains("dy"): tree["dy"].getFloat else: 10
+    ctx.rectangle x - dx, y - dy, 2 * dx, 2 * dy
+    addTouchArea(x, y, dx, dy, true, tree)
+
+  else:
+    let radius = if tree.contains("radius"): tree["radius"].getFloat else: 20
+    ctx.arc(x, y, radius, 0, 2 * PI)
+    addTouchArea(x, y, radius, radius, false, tree)
 
   ctx.closePath()
 
-  ctx.setSourceRgba(0.9, 0.9, 0.5, 0.3)
+  if tree.contains("stroke-color"):
+    let color = readJsonColor(tree["stroke-color"])
+    ctx.setSourceRgba(color.r, color.g, color.b, color.a)
+  else:
+    ctx.setSourceRgba(0.9, 0.9, 0.5, 0.3)
+
   ctx.setLineWidth(1.0)
   ctx.strokePreserve()
 
-  ctx.setSourceRgba(0.7, 0.5, 0.8, 0.2)
-  ctx.fill()
+  if tree.contains("fill-color"):
+    let color = readJsonColor(tree["fill-color"])
+    ctx.setSourceRgba(color.r, color.g, color.b, color.a)
+  else:
+    ctx.setSourceRgba(0.7, 0.5, 0.8, 0.2)
 
-  addTouchArea(x, y, radius, tree)
+  ctx.fill()
 
 proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if verboseMode:
