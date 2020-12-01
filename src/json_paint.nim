@@ -3,6 +3,8 @@ import sdl2
 import cairo
 import json
 import options
+import times
+import math
 
 import json_paint/shape_renderer
 import json_paint/color_util
@@ -12,6 +14,9 @@ var surface: ptr cairo.Surface
 var renderer: RendererPtr
 var mainSurface: sdl2.SurfacePtr
 var window: WindowPtr
+
+var windowWidth = 0
+var windowHeight = 0
 
 var bgBlack: RgbaColor = (0.0, 0.0, 0.0, 1.0)
 
@@ -27,6 +32,8 @@ proc initCanvas*(title: string, w: int, h: int, bg: RgbaColor = bgBlack) =
 
   # window = createWindow(title, 0, 0, cint w, cint h, SDL_WINDOW_SHOWN)
   window = createWindow(title, 0, 0, cint w, cint h, SDL_WINDOW_RESIZABLE)
+  windowWidth = w
+  windowHeight = h
 
   surface = imageSurfaceCreate(FORMAT_ARGB32, cint w, cint h)
   renderer = createRenderer(window, -1, 0)
@@ -51,7 +58,12 @@ proc renderCanvas*(tree: JsonNode) =
 
   let base = TreeContext(x: 0, y: 0)
   resetTouchStack()
+
+  let t0 = cpuTime()
   ctx.processJsonTree(tree, base)
+  let costTime = cpuTime() - t0
+  renderCostTime(ctx, costTime * 1000, windowWidth, windowHeight, base)
+
   ctx.destroy()
 
   # cairo surface -> sdl serface -> sdl texture -> copy to render
@@ -182,6 +194,8 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
         surface = imageSurfaceCreate(FORMAT_ARGB32, cint newSize.x, cint newSize.y)
         mainSurface = createRGBSurface(0, cint newSize.x, cint newSize.y, 32, rmask, gmask, bmask, amask)
 
+        windowWidth = newSize.x
+        windowHeight = newSize.y
         handleEvent(%* {
           "type": "window-resized",
           "x": newSize.x,

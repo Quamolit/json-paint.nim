@@ -300,3 +300,15 @@ proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
     echo "Invalid JSON node:"
     echo pretty(tree)
     showError("Unexpected JSON structure for rendering")
+
+proc renderCostTime*(ctx: ptr Context, cost: float, width: int, height: int, base: TreeContext) =
+  ctx.processJsonTree(%* {
+    "type": "text",
+    "text": $cost.round(1) & "ms",
+    "x": width - 8,
+    "y": 8,
+    "color": [200, 90, 90, 0.6],
+    "font-size": 10,
+    "font-face": "monospace",
+    "align": "right",
+  }, base)
