@@ -99,6 +99,13 @@ proc renderSomething() =
         ]
       },
       nil,
+      {
+        "type": "key-listener",
+        "key": "a",
+        "path": ["a", 1],
+        "action": ":hit-key",
+        "data": "demo data"
+      },
     ]
   })
 
