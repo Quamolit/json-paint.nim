@@ -15,11 +15,24 @@ var keyListenersStack: seq[KeyListener]
 proc resetKeyListenerStack*() =
   keyListenersStack = @[]
 
-proc addKeyListener*() =
-  discard
+proc addKeyListener*(tree: JsonNode) =
+  if tree.kind != JObject: showError("Expects object for touch area")
+  if tree.contains("key").not: showError("Expects key field")
+  if tree.contains("path").not: showError("Expects path field")
+  if tree.contains("action").not: showError("Expects action field")
 
-proc findKeyListener*() =
-  discard
+  keyListenersStack.add(KeyListener(
+    key: tree["key"].getStr,
+    path: tree["path"],
+    action: tree["action"],
+    data: if tree.contains("data"): tree["data"] else: newJNull()
+  ))
+
+proc findKeyListener*(k: string): seq[KeyListener] =
+  for item in keyListenersStack:
+    # echo "looking for k: ", k, " ", item
+    if item.key == k:
+      result.add(item)
 
 # https://wiki.libsdl.org/SDLKeycodeLookup
 proc attachKeyName*(k: int): string =

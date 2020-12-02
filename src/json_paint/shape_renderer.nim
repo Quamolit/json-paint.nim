@@ -266,8 +266,7 @@ proc renderTouchArea(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   ctx.fill()
 
 proc renderKeyListener*(ctx: ptr Context, tree: JsonNode) =
-  echo "key listener", tree
-  addKeyListener()
+  addKeyListener(tree)
 
 proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if verboseMode:

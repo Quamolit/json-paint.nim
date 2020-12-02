@@ -104,29 +104,60 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
           "x": event.motion.x,
           "y": event.motion.y,
         })
-    of KeyDown:
-      # echo "keydown event: ", event.key[]
-      handleEvent(%* {
-        "type": "key-down",
-        "sym": event.key.keysym.sym,
-        "repeat": event.key.repeat,
-        "scancode": $event.key.keysym.scancode,
-        "name": attachKeyName(event.key.keysym.sym)
-      })
     of TextInput:
       # echo "input: ", event.text.text[0]
       handleEvent(%* {
         "type": "text-input",
         "text": $event.text.text[0]
       })
+    of KeyDown:
+      # echo "keydown event: ", event.key[]
+      let name = attachKeyName(event.key.keysym.sym)
+      let targets = findKeyListener(name)
+      # echo "targets", targets, " ", name
+      if targets.len > 0:
+        for item in targets:
+          handleEvent(%* {
+            "type": "key-down",
+            "sym": event.key.keysym.sym,
+            "repeat": event.key.repeat,
+            "scancode": $event.key.keysym.scancode,
+            "name": attachKeyName(event.key.keysym.sym),
+            "path": item.path,
+            "action": item.action,
+            "data": item.data,
+          })
+      else:
+        handleEvent(%* {
+          "type": "key-down",
+          "sym": event.key.keysym.sym,
+          "repeat": event.key.repeat,
+          "scancode": $event.key.keysym.scancode,
+          "name": attachKeyName(event.key.keysym.sym)
+        })
     of KeyUp:
-      handleEvent(%* {
-        "type": "key-up",
-        "sym": event.key.keysym.sym,
-        "repeat": event.key.repeat,
-        "scancode": $event.key.keysym.scancode,
-        "name": attachKeyName(event.key.keysym.sym)
-      })
+      let name = attachKeyName(event.key.keysym.sym)
+      let targets = findKeyListener(name)
+      if targets.len > 0:
+        for item in targets:
+          handleEvent(%* {
+            "type": "key-up",
+            "sym": event.key.keysym.sym,
+            "repeat": event.key.repeat,
+            "scancode": $event.key.keysym.scancode,
+            "name": name,
+            "path": item.path,
+            "action": item.action,
+            "data": item.data,
+          })
+      else:
+        handleEvent(%* {
+          "type": "key-up",
+          "sym": event.key.keysym.sym,
+          "repeat": event.key.repeat,
+          "scancode": $event.key.keysym.scancode,
+          "name": name
+        })
     of QuitEvent:
       handleEvent(%* {
         "type": "quit"

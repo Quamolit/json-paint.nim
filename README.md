@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.22"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.23"
 ```
 
 ```nim
@@ -271,6 +271,10 @@ Example logs:
 event: {"type":"key-down","sym":100,"repeat":false,"scancode":"SDL_SCANCODE_D","name":"d"}
 event: {"type":"text-input","text":"d"}
 event: {"type":"key-up","sym":100,"repeat":false,"scancode":"SDL_SCANCODE_D","name":"d"}
+// keydown with actions
+event: {"type":"key-down","sym":97,"repeat":false,"scancode":"SDL_SCANCODE_A","name":"a","path":["a",1],"action":":hit-key","data":"demo data"}
+event: {"type":"text-input","text":"a"}
+event: {"type":"key-up","sym":97,"repeat":false,"scancode":"SDL_SCANCODE_A","name":"a","path":["a",1],"action":":hit-key","data":"demo data"}
 ```
 
 ### License
