@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.19"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.21"
 ```
 
 ```nim
@@ -138,6 +138,12 @@ data: Data # JSON
 x: 1
 y: 1
 radius: 20
+'fill-color': Color
+'stroke-color': Color
+
+'rect?': true # enabled rect mode
+dx: 24 # half of rect width
+dy: 8  # half of rect height
 ```
 
 ### Events
