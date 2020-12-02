@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/Quamolit/json-paint.nim#v0.0.21"
+requires "https://github.com/Quamolit/json-paint.nim#v0.0.22"
 ```
 
 ```nim
@@ -146,6 +146,16 @@ dx: 24 # half of rect width
 dy: 8  # half of rect height
 ```
 
+- Key Listener
+
+```coffee
+type: 'key-listener'
+path: ['a', 2] # JSON
+action: Action # JSON
+data: Data # JSON
+key: 'a'
+```
+
 ### Events
 
 ```coffee
@@ -162,6 +172,7 @@ type: 'key-down'
 sym: 97
 repeat: false
 scancode: "SDL_SCANCODE_D"
+name: 'a'
 ```
 
 ```coffee
@@ -169,6 +180,7 @@ type: 'key-up'
 sym: 97
 repeat: false
 scancode: "SDL_SCANCODE_D"
+name: 'a'
 ```
 
 ```coffee
@@ -254,6 +266,11 @@ Example logs:
 // click in touch-area
 {"type":"mouse-down","clicks":1,"path":["a",1],"action":":demo","data":null,"x":303,"y":120}
 {"type":"mouse-up","clicks":1,"path":["a",1],"action":":demo","data":null,"x":303,"y":120,"dx":0.0,"dy":0.0}
+
+// keyboard events
+event: {"type":"key-down","sym":100,"repeat":false,"scancode":"SDL_SCANCODE_D","name":"d"}
+event: {"type":"text-input","text":"d"}
+event: {"type":"key-up","sym":100,"repeat":false,"scancode":"SDL_SCANCODE_D","name":"d"}
 ```
 
 ### License

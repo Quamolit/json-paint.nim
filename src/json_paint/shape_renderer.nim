@@ -7,6 +7,7 @@ import ./error_util
 import ./color_util
 import ./touches
 import ./types
+import ./key_listener
 
 var verboseMode* = false
 
@@ -264,6 +265,10 @@ proc renderTouchArea(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
 
   ctx.fill()
 
+proc renderKeyListener*(ctx: ptr Context, tree: JsonNode) =
+  echo "key listener", tree
+  addKeyListener()
+
 proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if verboseMode:
     echo tree.pretty
@@ -291,9 +296,11 @@ proc processJsonTree*(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
         ctx.callOps(tree, base)
       of "touch-area":
         ctx.renderTouchArea(tree, base)
+      of "key-listener":
+        ctx.renderKeyListener(tree)
       else:
         echo tree.pretty
-        showError("Unknown type")
+        showError("Unknown type: " & nodeType)
     else:
       showError("Expects a `type` field on JSON data: " & $tree)
   else:

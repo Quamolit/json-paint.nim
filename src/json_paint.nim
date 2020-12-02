@@ -9,6 +9,7 @@ import math
 import json_paint/shape_renderer
 import json_paint/color_util
 import json_paint/touches
+import json_paint/key_listener
 
 var surface: ptr cairo.Surface
 var renderer: RendererPtr
@@ -58,6 +59,7 @@ proc renderCanvas*(tree: JsonNode) =
 
   let base = TreeContext(x: 0, y: 0)
   resetTouchStack()
+  resetKeyListenerStack()
 
   let t0 = cpuTime()
   ctx.processJsonTree(tree, base)
@@ -109,6 +111,7 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
         "sym": event.key.keysym.sym,
         "repeat": event.key.repeat,
         "scancode": $event.key.keysym.scancode,
+        "name": attachKeyName(event.key.keysym.sym)
       })
     of TextInput:
       # echo "input: ", event.text.text[0]
@@ -122,6 +125,7 @@ proc takeCanvasEvents*(handleEvent: proc(e: JsonNode):void) =
         "sym": event.key.keysym.sym,
         "repeat": event.key.repeat,
         "scancode": $event.key.keysym.scancode,
+        "name": attachKeyName(event.key.keysym.sym)
       })
     of QuitEvent:
       handleEvent(%* {
