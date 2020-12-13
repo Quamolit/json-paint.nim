@@ -1,7 +1,6 @@
 
 import json
 
-import ./types
 import ./error_util
 
 type KeyListener* = object
