@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/calcit-runner/json-paint.nim#v0.0.23"
+requires "https://github.com/calcit-runner/json-paint.nim#v0.0.24"
 ```
 
 ```nim
@@ -135,8 +135,7 @@ type: 'touch-area'
 path: ["a", 1] # JSON
 action: Action # JSON
 data: Data # JSON
-x: 1
-y: 1
+position: [1, 1]
 radius: 20
 'fill-color': Color
 'stroke-color': Color

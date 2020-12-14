@@ -4,7 +4,6 @@ import cairo
 import json
 import options
 import times
-import math
 
 import json_paint/shape_renderer
 import json_paint/color_util

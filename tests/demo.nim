@@ -70,8 +70,7 @@ proc renderSomething() =
       },
       {
         "type": "touch-area",
-        "x": 200,
-        "y": 80,
+        "position": [200, 80],
         "path": ["a", 1],
         "radius": 6,
         "action": ":demo",
@@ -80,8 +79,7 @@ proc renderSomething() =
       },
       {
         "type": "touch-area",
-        "x": 300,
-        "y": 120,
+        "position": [300, 120],
         "rect?": true,
         "path": ["a", 2],
         "action": ":demo-rect",

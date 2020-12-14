@@ -231,8 +231,9 @@ proc callOps(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
 
 proc renderTouchArea(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   ctx.newPath()
-  let x = base.x + (if tree.contains("x"): tree["x"].getFloat else: 0)
-  let y = base.y + (if tree.contains("y"): tree["y"].getFloat else: 0)
+  let position: JsonPosition = if tree.contains("position"): readPointVec(tree["position"]) else: (0.0, 0.0)
+  let x = base.x + position.x
+  let y = base.y + position.y
 
   let rectMode = if tree.contains("rect?"): tree["rect?"].getBool else: false
   if rectMode:
