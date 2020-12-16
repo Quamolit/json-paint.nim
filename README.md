@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/calcit-runner/json-paint.nim#v0.0.24"
+requires "https://github.com/calcit-runner/json-paint.nim#v0.0.25"
 ```
 
 ```nim
@@ -51,8 +51,7 @@ This library uses HSL/HSLA colors:
 
 ```coffee
 type: 'group'
-x: 1
-y: 1
+position: [1, 1],
 children: []
 ```
 

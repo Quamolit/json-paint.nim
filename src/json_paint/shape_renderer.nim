@@ -65,8 +65,16 @@ proc renderArc(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
 
 proc renderGroup(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if tree.contains("children"):
-    let x = if tree.contains("x"): tree["x"].getFloat else: 0
-    let y = if tree.contains("y"): tree["y"].getFloat else: 0
+    var x = 0.0
+    var y = 0.0
+    if tree.contains("position"):
+      let position = readPointVec(tree["position"])
+      x = position.x
+      y = position.y
+    if tree.contains("x"):
+      x = tree["x"].getFloat()
+    if tree.contains("y"):
+      y = tree["y"].getFloat()
     let children = tree["children"]
     if children.kind == JArray:
       for item in children.elems:

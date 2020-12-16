@@ -26,8 +26,7 @@ proc startRenderLoop() =
 proc renderSomething() =
   renderCanvas(%* {
     "type": "group",
-    "x": 100,
-    "y": 30,
+    "position": [100, 30],
     "children": [
       {
         "type": "arc",
