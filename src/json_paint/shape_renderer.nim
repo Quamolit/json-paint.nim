@@ -47,7 +47,7 @@ proc renderArc(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   if hasStroke:
     let color = readJsonColor(tree["stroke-color"])
     ctx.setSourceRgba(color.r, color.g, color.b, color.a)
-    let lineWidth = if tree.contains("line-width"): tree["lineWidth"].getFloat else: 1.0
+    let lineWidth = if tree.contains("line-width"): tree["line-width"].getFloat else: 1.0
     ctx.setLineWidth(lineWidth)
     if hasFill:
       ctx.strokePreserve()
@@ -263,7 +263,8 @@ proc renderTouchArea(ctx: ptr Context, tree: JsonNode, base: TreeContext) =
   else:
     ctx.setSourceRgba(0.9, 0.9, 0.5, 0.3)
 
-  ctx.setLineWidth(1.0)
+  let lineWidth = if tree.contains("line-width"): tree["line-width"].getFloat else: 1.0
+  ctx.setLineWidth(lineWidth)
   ctx.strokePreserve()
 
   if tree.contains("fill-color"):
