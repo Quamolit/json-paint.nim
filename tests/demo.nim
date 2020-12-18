@@ -75,6 +75,7 @@ proc renderSomething() =
         "action": ":demo",
         "fill-color": [200, 80, 30],
         "stroke-color": [200, 60, 90],
+        "line-width": 2,
       },
       {
         "type": "touch-area",
@@ -86,6 +87,7 @@ proc renderSomething() =
         "dy": 40,
         "fill-color": [0, 80, 70],
         "stroke-color": [200, 60, 90],
+        "line-width": 2,
       },
       {
         "type": "ops",

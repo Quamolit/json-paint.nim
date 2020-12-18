@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/calcit-runner/json-paint.nim#v0.0.25"
+requires "https://github.com/calcit-runner/json-paint.nim#v0.0.26"
 ```
 
 ```nim
@@ -80,7 +80,7 @@ radius: 1
 'to-angle': 2*PI # 0 ~ 2*PI
 'negative?': false
 'stroke-color': Color
-'stroke-width': 1
+'line-width': 1
 'fill-color': Color
 ```
 
@@ -138,6 +138,7 @@ position: [1, 1]
 radius: 20
 'fill-color': Color
 'stroke-color': Color
+'line-width': 1
 
 'rect?': true # enabled rect mode
 dx: 24 # half of rect width
