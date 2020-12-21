@@ -9,8 +9,7 @@ import json_paint
 proc startRenderLoop() =
   renderCanvas(%* {
     "type": "arc",
-    "x": 20,
-    "y": 20,
+    "position": [20, 20],
     "radius": 40,
     "line-color": [200, 80, 71, 0.4],
     "fill-color": [200, 80, 72, 0.4]
@@ -30,15 +29,14 @@ proc renderSomething() =
     "children": [
       {
         "type": "arc",
-        "x": 20,
-        "y": 20,
+        "position": [20, 20],
         "radius": 40,
         "stroke-color": [20, 80, 73],
         "fill-color": [60, 80, 74]
       },
       {
         "type": "polyline",
-        "from": [10, 10],
+        "position": [10, 10],
         "skip-first?": true,
         "stops": [
           [40, 40], [40, 80], [70, 90], [200, 200]
@@ -52,12 +50,12 @@ proc renderSomething() =
         "align": "center",
         "font-face": "Menlo",
         "font-weight": "normal",
-        "x": 40,
-        "y": 40,
+        "position": [40, 40],
         "color": [140, 80, 76]
       },
       {
         "type": "ops",
+        "position": [0, 0],
         "ops": [
           ["move-to", [100, 100]],
           ["move-to", [300, 200]],

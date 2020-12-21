@@ -38,7 +38,8 @@ proc hslToRgb*(h0, s0, l0: float, a: float): RgbaColor =
 
 # fallbacks to red
 proc readJsonColor*(raw: JsonNode): RgbaColor =
-  if raw.kind == JArray:
+  case raw.kind
+  of JArray:
     if raw.len < 3:
       echo "WARNING: too few numbers for a color"
       return failedColor
@@ -48,11 +49,13 @@ proc readJsonColor*(raw: JsonNode): RgbaColor =
     let a = if raw.elems.len >= 4: raw.elems[3].getFloat else: 1
     return hslToRgb(h, s, l, a)
 
-  if raw.kind == JObject:
+  of JObject:
     let h = if raw.contains("h"): raw["h"].getFloat else: 0
     let s = if raw.contains("s"): raw["s"].getFloat else: 0
     let l = if raw.contains("l"): raw["l"].getFloat else: 0
     let a = if raw.contains("a"): raw["a"].getFloat else: 1
     return hslToRgb(h, s, l, a)
 
-  return failedColor
+  else:
+    echo "WARNING: unknown JSON color: ", raw
+    return failedColor
