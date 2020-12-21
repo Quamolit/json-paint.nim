@@ -5,7 +5,7 @@
 ### Usage
 
 ```nim
-requires "https://github.com/calcit-runner/json-paint.nim#v0.0.26"
+requires "https://github.com/calcit-runner/json-paint.nim#v0.1.0"
 ```
 
 ```nim
@@ -44,7 +44,9 @@ JSON described in CoffeeScript.
 This library uses HSL/HSLA colors:
 
 ```coffee
-[359,99,99,1]
+[360,100,100]
+
+[360,100,100,1]
 ```
 
 - Group
@@ -59,9 +61,8 @@ children: []
 
 ```coffee
 type: 'text'
-x: 1
-y: 1
 text: 'DEMO'
+position: [1, 1]
 'font-size': 14
 'font-face': 'Arial'
 'font-weight': 'normal',
@@ -73,8 +74,7 @@ align: "center" # 'left' | 'center' | 'right'
 
 ```coffee
 type: 'arc'
-x: 1
-y: 1
+position: [1, 1]
 radius: 1
 'from-angle': 0
 'to-angle': 2*PI # 0 ~ 2*PI
@@ -88,8 +88,7 @@ radius: 1
 
 ```coffee
 type: 'ops'
-x: 1
-y: 1
+position: [1, 1]
 ops: [
   ['stroke'],
   ['fill'],
@@ -113,11 +112,8 @@ ops: [
 
 ```coffee
 type: 'polyline'
-from: [1, 1]
+position: [1, 1]
 stops: [
-  [2, 2], [3, 3], [4, 4]
-]
-'relative-stops': [
   [2, 2], [3, 3], [4, 4]
 ]
 'stroke-color': Color
