@@ -1,30 +1,31 @@
 
-import json
+import cirru_edn
 
 import ./error_util
+import ./edn_util
 
 type KeyListener* = object
   key*: string
-  path*: JsonNode
-  action*: JsonNode
-  data*: JsonNode
+  path*: CirruEdnValue
+  action*: CirruEdnValue
+  data*: CirruEdnValue
 
 var keyListenersStack: seq[KeyListener]
 
 proc resetKeyListenerStack*() =
   keyListenersStack = @[]
 
-proc addKeyListener*(tree: JsonNode) =
-  if tree.kind != JObject: showError("Expects object for touch area")
+proc addKeyListener*(tree: CirruEdnValue) =
+  if tree.kind != crEdnMap: showError("Expects object for touch area")
   if tree.contains("key").not: showError("Expects key field")
   if tree.contains("path").not: showError("Expects path field")
   if tree.contains("action").not: showError("Expects action field")
 
   keyListenersStack.add(KeyListener(
-    key: tree["key"].getStr,
+    key: tree.getStr("key"),
     path: tree["path"],
     action: tree["action"],
-    data: if tree.contains("data"): tree["data"] else: newJNull()
+    data: if tree.contains("data"): tree["data"] else: genCrEdn()
   ))
 
 proc findKeyListener*(k: string): seq[KeyListener] =

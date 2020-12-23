@@ -1,16 +1,18 @@
 
-import json
 import options
 import math
 
+import cirru_edn
+
 import ./error_util
 import ./types
+import ./edn_util
 
-var mousedownPoint: JsonPosition
+var mousedownPoint: EdnPosition
 var mousedownTracked* = false
-var mousedownTrackedAction*: JsonNode
-var mousedownTrackedPath*: JsonNode
-var mousedownTrackedData*: JsonNode
+var mousedownTrackedAction*: CirruEdnValue
+var mousedownTrackedPath*: CirruEdnValue
+var mousedownTrackedData*: CirruEdnValue
 
 type TouchEvent* = enum
   touchDown,
@@ -23,17 +25,17 @@ type TouchArea* = object
   dx: float
   dy: float
   inRect: bool
-  path*: JsonNode
-  action*: JsonNode
-  data*: JsonNode
+  path*: CirruEdnValue
+  action*: CirruEdnValue
+  data*: CirruEdnValue
 
 var touchItemsStack: seq[TouchArea]
 
 proc resetTouchStack*() =
   touchItemsStack = @[]
 
-proc addTouchArea*(x: float, y: float, dx: float, dy: float, inRect: bool, tree: JsonNode) =
-  if tree.kind != JObject: showError("Expects object for touch area")
+proc addTouchArea*(x: float, y: float, dx: float, dy: float, inRect: bool, tree: CirruEdnValue) =
+  if tree.kind != crEdnMap: showError("Expects object for touch area")
   if tree.contains("path").not: showError("Expects path field")
   if tree.contains("action").not: showError("Expects action field")
 
@@ -41,7 +43,7 @@ proc addTouchArea*(x: float, y: float, dx: float, dy: float, inRect: bool, tree:
     x: x, y: y, dx: dx, dy: dy, inRect: inRect,
     path: tree["path"],
     action: tree["action"],
-    data: if tree.contains("data"): tree["data"] else: newJNull()
+    data: if tree.contains("data"): tree["data"] else: genCrEdn()
   )
 
 proc findTouchArea*(x: cint, y: cint, eventKind: TouchEvent): Option[TouchArea] =
@@ -60,5 +62,5 @@ proc trackMousedownPoint*(x, y: int) =
   mousedownPoint.x = x.float
   mousedownPoint.y = y.float
 
-proc calcMousePositionDelta*(x, y: int): JsonPosition =
+proc calcMousePositionDelta*(x, y: int): EdnPosition =
   (x.float - mousedownPoint.x, y.float - mousedownPoint.y)

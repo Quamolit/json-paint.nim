@@ -1,6 +1,8 @@
 
-import json
+import cirru_edn
 # import strformat
+
+import ./edn_util
 
 # based on algorithm
 # https://stackoverflow.com/a/9493060/883571
@@ -37,25 +39,25 @@ proc hslToRgb*(h0, s0, l0: float, a: float): RgbaColor =
     return (r, g, b, a)
 
 # fallbacks to red
-proc readJsonColor*(raw: JsonNode): RgbaColor =
+proc readEdnColor*(raw: CirruEdnValue): RgbaColor =
   case raw.kind
-  of JArray:
-    if raw.len < 3:
+  of crEdnVector:
+    if raw.vectorVal.len < 3:
       echo "WARNING: too few numbers for a color"
       return failedColor
-    let h = raw.elems[0].getFloat
-    let s = raw.elems[1].getFloat
-    let l = raw.elems[2].getFloat
-    let a = if raw.elems.len >= 4: raw.elems[3].getFloat else: 1
+    let h = raw.getFloat(0)
+    let s = raw.getFloat(1)
+    let l = raw.getFloat(2)
+    let a = if raw.vectorVal.len >= 4: raw.getFloat(3) else: 1
     return hslToRgb(h, s, l, a)
 
-  of JObject:
-    let h = if raw.contains("h"): raw["h"].getFloat else: 0
-    let s = if raw.contains("s"): raw["s"].getFloat else: 0
-    let l = if raw.contains("l"): raw["l"].getFloat else: 0
-    let a = if raw.contains("a"): raw["a"].getFloat else: 1
+  of crEdnMap:
+    let h = if raw.contains("h"): raw.getFloat("h") else: 0
+    let s = if raw.contains("s"): raw.getFloat("s") else: 0
+    let l = if raw.contains("l"): raw.getFloat("l") else: 0
+    let a = if raw.contains("a"): raw.getFloat("a") else: 1
     return hslToRgb(h, s, l, a)
 
   else:
-    echo "WARNING: unknown JSON color: ", raw
+    echo "WARNING: unknown Edn color: ", raw
     return failedColor

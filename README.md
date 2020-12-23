@@ -1,15 +1,15 @@
-## JSON Paint
+## EDN Paint
 
-> JSON based painter based on SDL2 and Cario.
+> Cirru EDN based painter based on SDL2 and Cario.
 
 ### Usage
 
 ```nim
-requires "https://github.com/calcit-runner/json-paint.nim#v0.1.0"
+requires "https://github.com/calcit-runner/edn-paint.nim#v0.2.0"
 ```
 
 ```nim
-import json_paint
+import edn_paint
 
 initCanvas("title", 400, 400)
 # it also takes an optional RgbaColor as background
@@ -19,8 +19,8 @@ renderCanvas({
   "children": [] # see specs for currently supported shapes
 })
 
-takeCanvasEvents(proc(event: JsonNode) =
-  if event.kind == JObject:
+takeCanvasEvents(proc(event: CirruEdnValue) =
+  if event.kind == crEdnKeyword:
     if event["type"].getStr == "quit":
       quit 0
   echo "event: ", event
@@ -39,7 +39,7 @@ Find example in [`tests/demo.nim`](tests/demo.nim).
 
 ### Specs
 
-JSON described in CoffeeScript.
+EDN described in CoffeeScript.
 
 This library uses HSL/HSLA colors:
 
@@ -127,9 +127,9 @@ stops: [
 
 ```coffee
 type: 'touch-area'
-path: ["a", 1] # JSON
-action: Action # JSON
-data: Data # JSON
+path: ["a", 1] # EDN
+action: Action # EDN
+data: Data # EDN
 position: [1, 1]
 radius: 20
 'fill-color': Color
@@ -145,9 +145,9 @@ dy: 8  # half of rect height
 
 ```coffee
 type: 'key-listener'
-path: ['a', 2] # JSON
-action: Action # JSON
-data: Data # JSON
+path: ['a', 2] # EDN
+action: Action # EDN
+data: Data # EDN
 key: 'a'
 ```
 
